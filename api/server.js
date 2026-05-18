@@ -577,12 +577,4 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Blog API server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`Blog data file: ${BLOG_DATA_FILE}`);
-  console.log(`HAM radio data file: ${HAMRADIO_DATA_FILE}`);
-  Promise.all([
-    ensureDataFile(BLOG_DATA_FILE),
-    ensureDataFile(HAMRADIO_DATA_FILE),
-  ]).then(() => {
-    console.log("Data files ready");
-  });
 });
