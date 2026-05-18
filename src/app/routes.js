@@ -10,6 +10,10 @@ const Portfolio = lazy(() => import("../pages/portfolio").then(module => ({ defa
 const About = lazy(() => import("../pages/about").then(module => ({ default: module.About })));
 const Blog = lazy(() => import("../pages/blog").then(module => ({ default: module.Blog })));
 const BlogPost = lazy(() => import("../pages/blog/BlogPost").then(module => ({ default: module.BlogPost })));
+const HamRadio = lazy(() => import("../pages/hamradio").then(module => ({ default: module.HamRadio })));
+const HamRadioPost = lazy(() => import("../pages/hamradio/HamRadioPost").then(module => ({ default: module.HamRadioPost })));
+const Resources = lazy(() => import("../pages/resources").then(module => ({ default: module.Resources })));
+const HamHubPrivacy = lazy(() => import("../pages/hamhub-privacy").then(module => ({ default: module.HamHubPrivacy })));
 
 const AnimatedRoutes = withRouter(({ location }) => (
   <TransitionGroup>
@@ -36,6 +40,10 @@ const AnimatedRoutes = withRouter(({ location }) => (
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/hamradio" element={<HamRadio />} />
+          <Route path="/hamradio/:slug" element={<HamRadioPost />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/hamhub/privacy-policy" element={<HamHubPrivacy />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </Suspense>

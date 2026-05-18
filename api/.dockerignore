@@ -5,4 +5,3 @@ data/
 *.log
 .git/
 .DS_Store
-scripts/migrate-json-to-sqlite.js

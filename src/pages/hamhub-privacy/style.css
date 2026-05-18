@@ -1,0 +1,110 @@
+.privacy-header {
+    padding-bottom: 3rem;
+}
+
+.sec_sp {
+    margin-bottom: calc(2rem + 3vw);
+}
+
+.t_border {
+    border-color: var(--text-color) !important;
+}
+
+.privacy-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.privacy-list li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.privacy-list li::before {
+    content: ">";
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.privacy-list li strong {
+    color: var(--primary-color);
+}
+
+.highlight-box {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    border-left: 3px solid var(--primary-color);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.privacy-table {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.privacy-table th {
+    background: rgba(var(--primary-color-rgb), 0.2);
+    color: var(--primary-color) !important;
+    border-color: var(--secondary) !important;
+}
+
+.privacy-table td {
+    border-color: var(--secondary) !important;
+    vertical-align: middle;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.summary-item {
+    background: rgba(var(--primary-color-rgb), 0.05);
+    border: 1px solid var(--secondary);
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.summary-item:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+}
+
+.summary-item strong {
+    display: block;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.summary-item span {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .privacy-table {
+        font-size: 0.8rem;
+    }
+}

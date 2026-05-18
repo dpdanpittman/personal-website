@@ -24,6 +24,7 @@ export const Blog = () => {
       }
 
       const data = await response.json();
+      // Backend already sorts newest-first
       setPosts(data.posts || []);
       setError(null);
     } catch (err) {
@@ -80,9 +81,6 @@ export const Blog = () => {
                     <div className="blog-meta">
                       <span className="blog-date">{data.date}</span>
                       <span className="blog-reading-time">{data.readingTime} min read</span>
-                      {data.qualityScore && (
-                        <span className="blog-quality">Quality: {data.qualityScore}/10</span>
-                      )}
                     </div>
                     <h3 className="blog-title">{data.title}</h3>
                     <p className="blog-excerpt">{data.excerpt}</p>

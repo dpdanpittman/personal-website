@@ -41,14 +41,22 @@ export const Home = () => {
                 <div className="intro_btn-action pb-5">
                   <Link to="/blog" className="text_2">
                     <div id="button_p" className="ac_btn btn btn-cyber">
-                      The Blog
+                      Tech Blog
+                      <div className="ring one"></div>
+                      <div className="ring two"></div>
+                      <div className="ring three"></div>
+                    </div>
+                  </Link>
+                  <Link to="/hamradio" className="text_2">
+                    <div id="button_h" className="ac_btn btn btn-cyber">
+                      HAM Blog
                       <div className="ring one"></div>
                       <div className="ring two"></div>
                       <div className="ring three"></div>
                     </div>
                   </Link>
                   <Link to="/about">
-                    <div id="button_h" className="ac_btn btn btn-cyber">
+                    <div id="button_a" className="ac_btn btn btn-cyber">
                       About
                       <div className="ring one"></div>
                       <div className="ring two"></div>
