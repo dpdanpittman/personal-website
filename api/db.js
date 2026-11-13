@@ -54,6 +54,21 @@ CREATE TABLE IF NOT EXISTS hamradio_posts (
   readingTime INTEGER
 );
 CREATE INDEX IF NOT EXISTS idx_hamradio_posts_date ON hamradio_posts(date DESC, createdAt DESC);
+
+-- Grow log: its own section, never part of the main blog feed.
+CREATE TABLE IF NOT EXISTS grow_posts (
+  slug TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  excerpt TEXT,
+  content TEXT NOT NULL,
+  date TEXT,
+  plants TEXT,         -- JSON array, e.g. ["veg tent"]
+  stage TEXT,          -- e.g. "week 4 of flower"
+  photo TEXT,          -- stored file name in the photos folder (random hex + extension)
+  createdAt TEXT,
+  updatedAt TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_grow_posts_date ON grow_posts(date DESC, createdAt DESC);
 `;
 db.exec(SCHEMA);
 
@@ -127,4 +142,41 @@ function makeStore(tableName) {
 const blog = makeStore("blog_posts");
 const hamradio = makeStore("hamradio_posts");
 
-module.exports = { db, blog, hamradio };
+// Grow posts have their own columns (plants, stage, photo).
+function makeGrowStore() {
+  const toPost = (row) =>
+    row ? { ...row, plants: row.plants ? JSON.parse(row.plants) : [] } : null;
+  const selectAll = db.prepare(
+    "SELECT * FROM grow_posts ORDER BY date DESC, createdAt DESC",
+  );
+  const selectOne = db.prepare("SELECT * FROM grow_posts WHERE slug = ?");
+  const upsert = db.prepare(`
+    INSERT INTO grow_posts (slug, title, excerpt, content, date, plants, stage, photo, createdAt, updatedAt)
+    VALUES (@slug, @title, @excerpt, @content, @date, @plants, @stage, @photo, @createdAt, @updatedAt)
+    ON CONFLICT(slug) DO UPDATE SET
+      title=excluded.title, excerpt=excluded.excerpt, content=excluded.content, date=excluded.date,
+      plants=excluded.plants, stage=excluded.stage, photo=excluded.photo, updatedAt=excluded.updatedAt
+  `);
+  const deleteOne = db.prepare("DELETE FROM grow_posts WHERE slug = ?");
+  return {
+    list: () => selectAll.all().map(toPost),
+    get: (slug) => toPost(selectOne.get(slug)),
+    save: (p) =>
+      upsert.run({
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt ?? null,
+        content: p.content,
+        date: p.date ?? null,
+        plants: JSON.stringify(p.plants ?? []),
+        stage: p.stage ?? null,
+        photo: p.photo ?? null,
+        createdAt: p.createdAt ?? null,
+        updatedAt: p.updatedAt ?? null,
+      }),
+    remove: (slug) => deleteOne.run(slug),
+  };
+}
+const grow = makeGrowStore();
+
+module.exports = { db, blog, hamradio, grow, DB_PATH };

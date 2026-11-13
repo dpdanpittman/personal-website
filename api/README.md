@@ -133,3 +133,35 @@ cp data/blog-posts.json backups/blog-posts-$(date +%Y%m%d).json
 ## License
 
 MIT
+
+## Grow log (`/api/grow`)
+
+A section of its own, like ham radio. Grow posts are never part of the main blog feed.
+
+| Method | Path | Auth |
+| --- | --- | --- |
+| GET | `/api/grow/posts` | public (`?full=1` adds each body) |
+| GET | `/api/grow/posts/:slug` | public |
+| POST | `/api/grow/posts` | Bearer key (same key as the blog) |
+| DELETE | `/api/grow/posts/:slug` | Bearer key (the photo file is kept) |
+| POST | `/api/grow/photos` | Bearer key, multipart field `photo` |
+| GET | `/api/grow/photos/:name` | public |
+
+Photos:
+
+- JPEG, PNG or WebP only. The type is read from the file's bytes, not its name.
+- At most 15 MB and 30 megapixels. At most 10 uploads per 15 minutes, counted after the key check.
+- Every photo is decoded and re-encoded with sharp, so EXIF, GPS, XMP, IPTC and text chunks are dropped. The result is checked again before it is written.
+- The stored name is random (32 hex characters). The uploaded name is ignored.
+- Stored in `data/grow-photos/` next to `posts.sqlite` (set `GROW_PHOTOS_DIR` to move it).
+
+Limits: grow reads (list, posts, photos) skip the API-wide 100 per 15 minutes and have their own
+budget of 3000 per 15 minutes (`GROW_READS_PER_15MIN`), because the site rebuild and photo views share one IP.
+
+A post that names a blocked place, a street address, or coordinates is refused with 422.
+The place names are not in this repo. Set them on the server in `GROW_BLOCKED_PLACES`
+(comma separated) or in a file named by `GROW_BLOCKED_PLACES_FILE` (one per line).
+Names of 3 characters or less must match case; longer names ignore case and also match
+when spelled with spaces between the letters.
+
+Tests: `npm test` (uses a temp SQLite file and photos folder).

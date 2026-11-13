@@ -33,6 +33,10 @@ const publicLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",
+  // Grow reads (list, posts, photos) have their own higher limit in grow.js.
+  skip: (req) =>
+    (req.method === "GET" || req.method === "HEAD") &&
+    req.path.startsWith("/grow/"),
 });
 
 const writeLimiter = rateLimit({
@@ -135,7 +139,12 @@ function sanitizeText(s) {
 // Post store — backed by SQLite via db.js. The previous read-mutate-write
 // JSON pattern raced under concurrent writers; better-sqlite3's prepared
 // statements are atomic per-call and `replaceAll` is wrapped in a tx.
-const { blog: blogStore, hamradio: hamStore } = require("./db.js");
+const {
+  blog: blogStore,
+  hamradio: hamStore,
+  grow: growStore,
+  DB_PATH,
+} = require("./db.js");
 
 async function readBlogPosts() {
   return blogStore.list();
@@ -562,6 +571,24 @@ app.delete(
   },
 );
 
+// ========================================
+// GROW LOG ENDPOINTS (own section, own table, photos)
+// ========================================
+// Photos live next to the database (on the pod's disk mount), unless GROW_PHOTOS_DIR says otherwise.
+app.use(
+  "/api/grow",
+  require("./grow.js")({
+    authenticate,
+    writeLimiter,
+    writeBodyParser,
+    sanitizeText,
+    store: growStore,
+    photosDir:
+      process.env.GROW_PHOTOS_DIR ||
+      path.join(path.dirname(DB_PATH), "grow-photos"),
+  }),
+);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
@@ -573,8 +600,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Blog API server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-});
+// Start server (tests load the app without listening)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Blog API server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  });
+}
+
+module.exports = app;
