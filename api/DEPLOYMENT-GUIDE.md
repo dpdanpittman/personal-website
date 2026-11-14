@@ -12,17 +12,17 @@ The system consists of:
 
 ## Step 1: Deploy the Blog API
 
-### On the Server (192.168.6.56)
+### On the Server
 
 **1. Copy API files to server:**
 ```bash
 # From your workspace
-rsync -avz ~/informal-systems/claude-workspace/personal-website/api/ zaphod-beeblebox@192.168.6.56:~/src/personal-website/api/
+rsync -avz ./api/ <user>@<server>:~/src/personal-website/api/
 ```
 
 **2. SSH into server and setup:**
 ```bash
-ssh zaphod-beeblebox@192.168.6.56
+ssh <user>@<server>
 cd ~/src/personal-website/api
 ```
 
@@ -53,7 +53,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 node server.js
 ```
 
-Visit http://192.168.6.56:3301/health - should return `{"status":"ok"}`
+Visit http://<server>:3301/health - should return `{"status":"ok"}`
 
 Press Ctrl+C to stop.
 
